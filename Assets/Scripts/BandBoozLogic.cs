@@ -27,7 +27,7 @@ public class BandBoozLogic : MonoBehaviour
 
     private bool _isSolved = false;
 
-    private static int counter = 0;
+    private static int counter = 1;
     private int _id;
 
     private readonly char[][] topWords = { "clavichord".ToCharArray(), "concertina".ToCharArray(), "bassguitar".ToCharArray(), "didgeridoo".ToCharArray(), "flugelhorn".ToCharArray(), "frenchhorn".ToCharArray() };
@@ -151,16 +151,10 @@ public class BandBoozLogic : MonoBehaviour
             timeDown = Info.GetTime();
             if(input == CorrectButton) corrects[0] = 1;
             else
-            {
                 corrects[0] = 0;
-                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected button {1}.", _id, CorrectButton + 1);
-            }
-            if(Mathf.FloorToInt(timeDown % 10) == holdStart) corrects[1] = 1;
+            if (Mathf.FloorToInt(timeDown % 10) == holdStart) corrects[1] = 1;
             else
-            {
                 corrects[1] = 0;
-                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I you to press it on a {1}.", _id, holdStart);
-            }
         }
         else
         {
@@ -187,24 +181,20 @@ public class BandBoozLogic : MonoBehaviour
         if(_isSolved) return;
         if(holdStage)
         {
-            if(_forceTap)
-            {
-                Debug.LogFormat("[Bandboozled Again #{0}] Released after 0.1 seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
-                return;
-            }
+            Debug.LogFormat("[Bandboozled Again #{0}] Released after {1} seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
+            if (Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
+            holdStage = false;
+            if (corrects[0] == 0)
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected button {1}.", _id, CorrectButton + 1);
+            if (corrects[1] == 0)
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I told you to hold it on a {1}.", _id, holdStart);
+            if (Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
             else
             {
-                Debug.LogFormat("[Bandboozled Again #{0}] Released after {1} seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
-                if(Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
-                holdStage = false;
-                if(Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
-                else
-                {
-                    Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected {1} seconds.", _id, CorrectTime);
-                    corrects[2] = 0;
-                }
-                Debug.LogFormat("[Bandboozled Again #{0}] Moving on to stage 2. Tap the following buttons: {1}", _id, Enumerable.Range(1, 6).Where(i => buttonColors[i - 1]).Join(", "));
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected {1} seconds.", _id, CorrectTime);
+                corrects[2] = 0;
             }
+            Debug.LogFormat("[Bandboozled Again #{0}] Moving on to stage 2. Tap the following buttons: {1}", _id, Enumerable.Range(1, 6).Where(i => buttonColors[i - 1]).Join(", "));
         }
         if(neededPressesNow == 0) CheckInput();
     }
@@ -269,8 +259,6 @@ public class BandBoozLogic : MonoBehaviour
         StopAllCoroutines();
         leds.StopAllCoroutines();
     }
-
-    private bool _forceTap = false;
 
     //twitch plays
 #pragma warning disable 414
@@ -360,15 +348,12 @@ public class BandBoozLogic : MonoBehaviour
                         yield break;
                     }
                 }
-                _forceTap = true;
                 for(int i = 1; i < parameters.Length; i++)
                 {
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteractEnded();
-                    yield return new WaitForSeconds(0.15f);
+                    yield return new WaitForSeconds(0.25f);
                 }
-                _forceTap = false;
                 if(neededPressesNow == 0 && !corrects.All(x => x == 1))
                     yield return "strike";
             }
@@ -400,9 +385,8 @@ public class BandBoozLogic : MonoBehaviour
                 if(buttonColors[i])
                 {
                     moduleSelectable.Children[i].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[i].OnInteractEnded();
-                    yield return new WaitForSeconds(0.15f);
+                    yield return new WaitForSeconds(0.25f);
                 }
             }
         }
@@ -428,9 +412,8 @@ public class BandBoozLogic : MonoBehaviour
                 if(buttonColors[i])
                 {
                     moduleSelectable.Children[i].OnInteract();
-                    yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[i].OnInteractEnded();
-                    yield return new WaitForSeconds(0.15f);
+                    yield return new WaitForSeconds(0.25f);
                 }
             }
         }

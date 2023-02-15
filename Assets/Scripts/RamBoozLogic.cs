@@ -24,7 +24,7 @@ public class RamBoozLogic : MonoBehaviour {
 
     private bool _isSolved = false;
 
-    private static int counter = 0;
+    private static int counter = 1;
     private int _id;
 
     private readonly char[][] Words = new string[] { "BillyGoat", "Shearling", "NannyGoat", "Livestock", "Capricorn", "Goatskins", "WaliaIbex", "Shorthair", "Garganica", "Icelandic", "Jamnapari", "Messinese", "Oberhasli", "Norwegian", "Pinzgauer", "SokotoRed", "Repartida", "Blackneck", }.Select(x => x.ToLowerInvariant().ToCharArray()).ToArray();
