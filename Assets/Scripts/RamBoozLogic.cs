@@ -94,7 +94,8 @@ public class RamBoozLogic : MonoBehaviour {
         Debug.LogFormat("[Ramboozled Again #{0}] Button labels are (reading order): {1}", _id, labelsC.Select(x => x.ToString() + labelsC2[labelsC.IndexOf(x)]).Join(", "));
         Debug.LogFormat("<Ramboozled Again #{0}> Button glyphs are: {1}", _id, labels.Join(", "));
         int b = UnityEngine.Random.Range(0, 18);
-        char[] key = Words[b];
+        char[] key = new char[9];
+        Words[b].CopyTo(key, 0);
         Debug.LogFormat("[Ramboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
         int A, B;
         do
