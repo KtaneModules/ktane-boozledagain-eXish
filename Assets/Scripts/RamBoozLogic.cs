@@ -154,7 +154,7 @@ public class RamBoozLogic : MonoBehaviour {
         if (Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
         if (Mathf.Floor(timeDown) % 10 > (edgeworkTests[buttonColors[pressedButtonId]] - 0.5f) && Mathf.Floor(timeDown) % 10 < (edgeworkTests[buttonColors[pressedButtonId]] + 0.5f) && isCorrectButton) corrects[4 - neededPressesNow] = 1;
         else if (isCorrectButton) corrects[4 - neededPressesNow] = 2;
-        else corrects[2] = 0;
+        else corrects[4 - neededPressesNow] = 0;
         neededPressesNow--;
         if (neededPressesNow == 0) CheckInput();
         else
@@ -166,7 +166,7 @@ public class RamBoozLogic : MonoBehaviour {
             int A, B;
             do
             {
-                A = UnityEngine.Random.Range(0, 36);
+                A = UnityEngine.Random.Range(0, 26);
                 B = UnityEngine.Random.Range(0, 9);
             }
             while (!labelsVals.Contains((A * B) % 26));
